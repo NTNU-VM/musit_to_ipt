@@ -3,8 +3,8 @@
 # for each iteration
 
 # script stored at bitbucket, run on server as: 
-# source("https://git.vm.ntnu.no/projects/MUS/repos/musit_to_ipt/raw/R/musit_to_zootron.R?at=refs%2Fheads%2Fmaster")
-
+#source("https://git.vm.ntnu.no/projects/MUS/repos/musit_to_ipt/raw/R/musit_to_zootron.R?at=refs%2Fheads%2Fmaster")
+#source("https://git.vm.ntnu.no/users/andersfi/repos/musit_to_ipt/raw/R/musit_to_zootron.R?at=refs%2Fheads%2Fmaster")
 
 # dependencie
 library(countrycode)
@@ -43,7 +43,7 @@ for (i in 1:length(dataset)){
   inndata$eventDate <- stringr::str_replace_all(inndata$eventDate,"-00","")
   inndata$dateIdentified <- stringr::str_replace_all(inndata$dateIdentified,"-00","")
   inndata$occurrenceID <- paste("urn:uuid:",inndata$occurrenceID,sep="") # decleare the nature of the identifier by adding urn:uuid at start
-  
+  inndata$db_import_datetime <- Sys.time()
   # upload data to database 
 
   con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(), # DB connection
