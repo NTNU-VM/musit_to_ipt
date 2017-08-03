@@ -3,7 +3,7 @@
 # for each iteration
 
 # script stored at bitbucket, run on server as: 
-# source("https://git.vm.ntnu.no/users/andersfi/repos/musit_to_ipt/raw/R/musit_to_zootron.R?at=refs%2Fheads%2Fmaster")
+# source("https://git.vm.ntnu.no/projects/MUS/repos/musit_to_ipt/raw/R/musit_to_zootron.R?at=refs%2Fheads%2Fmaster")
 
 
 # dependencie
