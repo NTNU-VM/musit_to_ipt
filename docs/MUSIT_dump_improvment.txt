@@ -1,0 +1,8 @@
+# suggestions for improvments to the musit dump 
+Lacking some mandatory fields in the dump, also some fields does not comply with GBIF standards. 
+
+So far noted: 
+* countryCode (required field)
+* sex (should follow controlled vocabulary, i.e. male, female, unknown...). 
+* taxonRank (missing)
+* higher taxa information (kingdom, order etc...)
