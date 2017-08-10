@@ -1,3 +1,3 @@
-1. Made a script file to ease the execution of the R-command, and placed this in the home-folder of ITs home folder.
+1. Made a script file to ease the execution of the R-command, and placed this in ITs home folder.
 2. musit_to_ipt.sh -> R -e 'source("https://git.vm.ntnu.no/projects/MUS/repos/musit_to_ipt/raw/R/musit_to_zootron.R?at=refs%2Fheads%2Fmaster")' > /var/log/musit_to_ipt_cron.log 2>&1
 3. Cronjob is set to run daily at 23:00, under the credentials of ITs account. (crontab -u %username% -e)
