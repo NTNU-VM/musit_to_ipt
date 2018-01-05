@@ -51,6 +51,7 @@ for (i in 1:length(dataset)){
   dbSendStatement(con,paste("DROP TABLE IF EXISTS", dataset[i])) # delete existing table
   copy_to(con,inndata,paste(dataset[i]),temporary = FALSE) # upload table
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
+  dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
   dbDisconnect(con) # disconnect from DB
 
 }
