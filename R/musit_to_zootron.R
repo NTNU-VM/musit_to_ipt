@@ -17,7 +17,7 @@ library(DBI)
 # lists of datasets to process ------ 
 # (see http://www.unimus.no/nedlasting/datasett/ )
 
-dataset <- c("entomology_ntnuvmti")
+dataset <- c("entomology_ntnuvmti","marine_ntnuvmmi")
 
 # download, clean and upload to db ------
 for (i in 1:length(dataset)){
