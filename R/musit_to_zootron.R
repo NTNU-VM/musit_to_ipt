@@ -1,4 +1,3 @@
-
 # To be run as loop, downloading and storing each dataset named in the vector "dataset" 
 # for each iteration
 
@@ -57,6 +56,11 @@ for (i in 1:length(dataset)){
         where lower(\"basisOfRecord\") like '%preserved%' and lower(\"basisOfRecord\") not like 'preservedspecimen';")) # update basisOfRecord for misspelling
   dbSendStatement(con,paste("update ", dataset[i], " set send_to_ipt = FALSE 
         where lower(\"basisOfRecord\") not like lower('%Preserved_Specimen|FossilSpecimen|LivingSpecimen|HumanObservation|MachineObservation|MaterialSample|Occurrence%');")) # exclude record for export to ipt where basisOfRecord is not normalized according to the DcW vocabulary.
+  dbSendStatement(con,paste("with double_rec_temp as (
+        select \"occurrenceID\", count(\"collectionCode\") as n from ", dataset[i], " group by \"occurrenceID\")
+        update ", dataset[i], " set send_to_ipt = FALSE
+        from (select * from double_rec_temp where n > 1) dbl
+	      where dbl.n > 1 and dbl.\"occurrenceID\"=", dataset[i], "\"occurrenceID\";")) # exclude record to export to ipt when occurrenceID occures more than one
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
   dbDisconnect(con) # disconnect from DB
