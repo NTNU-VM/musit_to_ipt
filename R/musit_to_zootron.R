@@ -51,6 +51,7 @@ for (i in 1:length(dataset)){
   copy_to(con,inndata,paste(dataset[i]),temporary = FALSE) # upload table
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD import_id SERIAL PRIMARY KEY;")) # make the table content readable accross database platform. OBS! import_id is not persistent it is replace at every import.
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " RENAME \"dcterms.modified\" TO modified;")) # make field name readable in other system that does not support field name with point.
+  dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD send_to_ipt boolean DEFAULT(TRUE);")) # create a filter to for sending true data to the ipt
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
   dbDisconnect(con) # disconnect from DB
