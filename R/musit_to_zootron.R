@@ -60,7 +60,7 @@ for (i in 1:length(dataset)){
         select \"occurrenceID\", count(\"collectionCode\") as n from ", dataset[i], " group by \"occurrenceID\")
         update ", dataset[i], " set send_to_ipt = FALSE
         from (select * from double_rec_temp where n > 1) dbl
-	      where dbl.n > 1 and dbl.\"occurrenceID\"=", dataset[i], "\"occurrenceID\";")) # exclude record to export to ipt when occurrenceID occures more than one
+	      where dbl.n > 1 and dbl.\"occurrenceID\"=", dataset[i], ".\"occurrenceID\";")) # exclude record to export to ipt when occurrenceID occures more than one
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
   dbDisconnect(con) # disconnect from DB
