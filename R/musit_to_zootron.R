@@ -55,7 +55,7 @@ for (i in 1:length(dataset)){
   dbSendStatement(con,paste("update ", dataset[i], " set \"basisOfRecord\" = 'PreservedSpecimen' 
         where lower(\"basisOfRecord\") like '%preserved%' and lower(\"basisOfRecord\") not like 'preservedspecimen';")) # update basisOfRecord for misspelling
   dbSendStatement(con,paste("update ", dataset[i], " set send_to_ipt = FALSE 
-        where lower(\"basisOfRecord\") not like lower('%Preserved_Specimen|FossilSpecimen|LivingSpecimen|HumanObservation|MachineObservation|MaterialSample|Occurrence%');")) # exclude record for export to ipt where basisOfRecord is not normalized according to the DcW vocabulary.
+        where position(lower(\"basisOfRecord\") in lower('PreservedSpecimen|FossilSpecimen|LivingSpecimen|HumanObservation|MachineObservation|MaterialSample|Occurrence'))=0;")) # exclude record for export to ipt where basisOfRecord is not normalized according to the DcW vocabulary.
   dbSendStatement(con,paste("with double_rec_temp as (
         select \"occurrenceID\", count(\"collectionCode\") as n from ", dataset[i], " group by \"occurrenceID\")
         update ", dataset[i], " set send_to_ipt = FALSE
