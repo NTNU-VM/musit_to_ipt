@@ -1,10 +1,6 @@
 # To be run as loop, downloading and storing each dataset named in the vector "dataset" 
 # for each iteration
 
-# script stored at bitbucket, run on server as: 
-#source("https://git.vm.ntnu.no/projects/MUS/repos/musit_to_ipt/raw/R/musit_to_zootron.R?at=refs%2Fheads%2Fmaster")
-
-
 # dependencie
 library(countrycode)
 library(dplyr)
