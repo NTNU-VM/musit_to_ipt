@@ -42,7 +42,7 @@ for (i in 1:length(dataset)){
   # upload data to database 
 
   con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(), # DB connection
-                        dbname="musit_to_ipt")
+                        dbname="musit_to_ipt", options="-c search_path=public")
   dbSendStatement(con,paste("DROP TABLE IF EXISTS", dataset[i])) # delete existing table
   copy_to(con,inndata,paste(dataset[i]),temporary = FALSE) # upload table
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD import_id SERIAL PRIMARY KEY;")) # make the table content readable accross database platform. OBS! import_id is not persistent it is replace at every import.
