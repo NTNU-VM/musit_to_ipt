@@ -8,6 +8,7 @@ library(dbplyr)
 library(RPostgreSQL)
 library(stringr)
 library(DBI)
+library(rio)
 
 # lists of datasets to process ------ 
 # (see http://www.unimus.no/nedlasting/datasett/ )
@@ -21,7 +22,7 @@ for (i in 1:length(dataset)){
   tmp <- tempfile()
   download.file(url,tmp)
   # NOTE: dataset is further reffered to as "inndata"
-  inndata <- read.csv(gzfile(tmp), sep="\t", header=TRUE, stringsAsFactors=FALSE)
+  inndata <- read.csv(gzfile(tmp), sep="\t", header=TRUE, stringsAsFactors=FALSE, quote = "")
   
   # some cleaning of data, and adding of terms
   inndata$geodeticDatum <- "WGS84" # add term
