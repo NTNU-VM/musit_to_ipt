@@ -8,7 +8,6 @@ library(dbplyr)
 library(RPostgreSQL)
 library(stringr)
 library(DBI)
-library(rio)
 
 # lists of datasets to process ------ 
 # (see http://www.unimus.no/nedlasting/datasett/ )
