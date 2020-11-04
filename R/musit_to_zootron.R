@@ -24,14 +24,14 @@ for (i in 1:length(dataset)){
   # NOTE: dataset is further reffered to as "inndata"
   #inndata <- read.csv(gzfile(tmp), sep="\t", header=TRUE, stringsAsFactors=FALSE, quote = "")
   # get the text file from a list of files
-  txt_file <- paste(dataset[1],".txt",sep="")
+  txt_file <- paste(dataset[i],".txt",sep="")
   inndata <- read.csv(unzip(tmp, files=txt_file), sep="\t", header=TRUE, stringsAsFactors=FALSE, quote = "")
 	
   # some cleaning of data, and adding of terms
   inndata$geodeticDatum <- "WGS84" # add term
   inndata$kingdom <- "Animalia" # add term
   #inndata$countryCode <- countrycode(inndata$country, 'country.name', 'iso3c') # get country code
-  inndata$countryCode <- countrycode(toString(inndata$country), 'country.name', 'iso3c') # get country code
+  #inndata$countryCode <- countrycode(toString(inndata$country), 'country.name', 'iso3c') # get country code
   inndata$dateIdentified[inndata$dateIdentified=="0000-00-00"] <- NA
   inndata$eventDate[inndata$eventDate=="0000-00-00"] <- NA
   inndata$eventDate <- stringr::str_replace_all(inndata$eventDate,"-00","")
