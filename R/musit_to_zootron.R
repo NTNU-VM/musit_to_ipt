@@ -58,6 +58,7 @@ for (i in 1:length(dataset)){
   dbWriteTable(con,dataset[i], inndata) # upload table
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD import_id SERIAL PRIMARY KEY;")) # make the table content readable accross database platform. OBS! import_id is not persistent it is replace at every import.
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " RENAME \"dcterms.modified\" TO modified;")) # make field name readable in other system that does not support field name with point.
+  dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " RENAME \"row.names\" TO \"row_names\";")) # make field name readable in other system that does not support field name with point.
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD send_to_ipt boolean DEFAULT(TRUE);")) # create a filter to for sending true data to the ipt
   dbSendStatement(con,paste("update ", dataset[i], " set \"basisOfRecord\" = 'PreservedSpecimen' 
         where lower(\"basisOfRecord\") like '%preserved%' and lower(\"basisOfRecord\") not like 'preservedspecimen';")) # update basisOfRecord for misspelling
