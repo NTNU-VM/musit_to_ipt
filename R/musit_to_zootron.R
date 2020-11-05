@@ -2,7 +2,7 @@
 # for each iteration
 
 # dependencie
-library(countrycode)
+#library(countrycode) the function is disabled due to 10000 byte limitation
 library(dplyr)
 library(dbplyr)
 library(RPostgreSQL)
@@ -14,6 +14,15 @@ library(DBI)
 
 dataset <- c("entomology_ntnuvmti","marine_ntnuvmmi")
 
+#connect to the database
+pg_drv<-dbDriver("PostgreSQL")
+pg_db <- "musit_to_ipt"
+pg_host <- "vm-srv-zootron.vm.ntnu.no"
+#when running locally use this log in
+#con<-dbConnect(pg_drv,dbname=pg_db,user=rstudioapi::askForPassword("Please enter your user name"), password=rstudioapi::askForPassword("Please enter your psw"),host=pg_host, options="-c search_path=public")
+#when running on the server use this log in
+con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(), dbname=pg_db, options="-c search_path=public")
+
 # download, clean and upload to db ------
 for (i in 1:length(dataset)){
 
@@ -22,7 +31,6 @@ for (i in 1:length(dataset)){
   tmp <- tempfile()
   download.file(url,tmp)
   # NOTE: dataset is further reffered to as "inndata"
-  #inndata <- read.csv(gzfile(tmp), sep="\t", header=TRUE, stringsAsFactors=FALSE, quote = "")
   # get the text file from a list of files
   txt_file <- paste(dataset[i],".txt",sep="")
   inndata <- read.csv(unzip(tmp, files=txt_file), sep="\t", header=TRUE, stringsAsFactors=FALSE, quote = "")
@@ -30,7 +38,6 @@ for (i in 1:length(dataset)){
   # some cleaning of data, and adding of terms
   inndata$geodeticDatum <- "WGS84" # add term
   inndata$kingdom <- "Animalia" # add term
-  #inndata$countryCode <- countrycode(inndata$country, 'country.name', 'iso3c') # get country code
   #inndata$countryCode <- countrycode(toString(inndata$country), 'country.name', 'iso3c') # get country code
   inndata$dateIdentified[inndata$dateIdentified=="0000-00-00"] <- NA
   inndata$eventDate[inndata$eventDate=="0000-00-00"] <- NA
@@ -44,12 +51,11 @@ for (i in 1:length(dataset)){
   inndata$dateIdentified <- stringr::str_replace_all(inndata$dateIdentified,"-00","")
   inndata$occurrenceID <- paste("urn:uuid:",inndata$occurrenceID,sep="") # decleare the nature of the identifier by adding urn:uuid at start
   inndata$db_import_datetime <- Sys.time()
-  # upload data to database 
 
-  con <- DBI::dbConnect(RPostgreSQL::PostgreSQL(), # DB connection
-                        dbname="musit_to_ipt", options="-c search_path=public")
+  # upload data to database 
   dbSendStatement(con,paste("DROP TABLE IF EXISTS", dataset[i])) # delete existing table
-  copy_to(con,inndata,paste(dataset[i]),temporary = FALSE) # upload table
+  #copy_to(con,inndata,paste(dataset[i]),temporary = FALSE) # upload table
+  dbWriteTable(con,dataset[i], inndata) # upload table
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD import_id SERIAL PRIMARY KEY;")) # make the table content readable accross database platform. OBS! import_id is not persistent it is replace at every import.
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " RENAME \"dcterms.modified\" TO modified;")) # make field name readable in other system that does not support field name with point.
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD send_to_ipt boolean DEFAULT(TRUE);")) # create a filter to for sending true data to the ipt
@@ -64,9 +70,10 @@ for (i in 1:length(dataset)){
 	      where dbl.n > 1 and dbl.\"occurrenceID\"=", dataset[i], ".\"occurrenceID\";")) # exclude record to export to ipt when occurrenceID occures more than one
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
-  dbDisconnect(con) # disconnect from DB
-
 }
+
+dbDisconnect(con) # disconnect from DB
+
 
 
 
