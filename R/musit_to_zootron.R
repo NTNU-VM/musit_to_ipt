@@ -33,7 +33,7 @@ for (i in 1:length(dataset)){
   # NOTE: dataset is further reffered to as "inndata"
   # get the text file from a list of files
   txt_file <- paste(dataset[i],".txt",sep="")
-  inndata <- read.csv(unzip(tmp, files=txt_file), sep="\t", header=TRUE, stringsAsFactors=FALSE, quote = "")
+  inndata <- read.csv(unzip(tmp, files=txt_file), sep="\t", header=TRUE, stringsAsFactors=FALSE, quote = "", fileEncoding = "UTF-8")
 	
   # some cleaning of data, and adding of terms
   inndata$geodeticDatum <- "WGS84" # add term
