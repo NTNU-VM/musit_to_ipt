@@ -53,7 +53,8 @@ for (i in 1:length(dataset)){
   inndata$db_import_datetime <- Sys.time()
 
   # upload data to database 
-  dbSendStatement(con,paste("DROP TABLE IF EXISTS", dataset[i])) # delete existing table
+  dbSendStatement(con,paste("DROP VIEW IF EXISTS public.", dataset[i], "_view", sep="")) # delete the view that serves the ipt
+  dbSendStatement(con,paste("DROP TABLE IF EXISTS", dataset[i], sep="")) # delete existing table
   #copy_to(con,inndata,paste(dataset[i]),temporary = FALSE) # upload table
   dbWriteTable(con,dataset[i], inndata) # upload table
   dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD import_id SERIAL PRIMARY KEY;")) # make the table content readable accross database platform. OBS! import_id is not persistent it is replace at every import.
@@ -71,6 +72,7 @@ for (i in 1:length(dataset)){
 	      where dbl.n > 1 and dbl.\"occurrenceID\"=", dataset[i], ".\"occurrenceID\";")) # exclude record to export to ipt when occurrenceID occures more than one
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
   dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
+  dbSendStatement(con,paste("select public.create_", dataset[i], "_view()",sep="")) # create the view that serves the ipt
 }
 
 dbDisconnect(con) # disconnect from DB
