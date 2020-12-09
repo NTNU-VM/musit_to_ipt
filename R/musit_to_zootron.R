@@ -12,7 +12,7 @@ library(DBI)
 # lists of datasets to process ------ 
 # (see http://www.unimus.no/nedlasting/datasett/ )
 
-dataset <- c("entomology_ntnuvmti","marine_ntnuvmmi")
+dataset <- c("marine_ntnuvmmi","entomology_ntnuvmti")
 
 #connect to the database
 pg_drv<-dbDriver("PostgreSQL")
@@ -53,25 +53,25 @@ for (i in 1:length(dataset)){
   inndata$db_import_datetime <- Sys.time()
 
   # upload data to database 
-  dbSendStatement(con,paste("DROP VIEW IF EXISTS public.", dataset[i], "_view", sep="")) # delete the view that serves the ipt
-  dbSendStatement(con,paste("DROP TABLE IF EXISTS", dataset[i], sep="")) # delete existing table
+  dbExecute(con,paste("DROP VIEW IF EXISTS public.", dataset[i], "_view", sep="")) # delete the view that serves the ipt
+  dbExecute(con,paste("DROP TABLE IF EXISTS", dataset[i], sep="")) # delete existing table
   #copy_to(con,inndata,paste(dataset[i]),temporary = FALSE) # upload table
   dbWriteTable(con,dataset[i], inndata) # upload table
-  dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD import_id SERIAL PRIMARY KEY;")) # make the table content readable accross database platform. OBS! import_id is not persistent it is replace at every import.
-  dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " RENAME \"dcterms.modified\" TO modified;")) # make field name readable in other system that does not support field name with point.
-  dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " RENAME \"row.names\" TO \"row_names\";")) # make field name readable in other system that does not support field name with point.
-  dbSendStatement(con,paste("ALTER TABLE ", dataset[i], " ADD send_to_ipt boolean DEFAULT(TRUE);")) # create a filter to for sending true data to the ipt
-  dbSendStatement(con,paste("update ", dataset[i], " set \"basisOfRecord\" = 'PreservedSpecimen' 
+  dbExecute(con,paste("ALTER TABLE ", dataset[i], " ADD import_id SERIAL PRIMARY KEY;")) # make the table content readable accross database platform. OBS! import_id is not persistent it is replace at every import.
+  dbExecute(con,paste("ALTER TABLE ", dataset[i], " RENAME \"dcterms.modified\" TO modified;")) # make field name readable in other system that does not support field name with point.
+  dbExecute(con,paste("ALTER TABLE ", dataset[i], " RENAME \"row.names\" TO \"row_names\";")) # make field name readable in other system that does not support field name with point.
+  dbExecute(con,paste("ALTER TABLE ", dataset[i], " ADD send_to_ipt boolean DEFAULT(TRUE);")) # create a filter to for sending true data to the ipt
+  dbExecute(con,paste("update ", dataset[i], " set \"basisOfRecord\" = 'PreservedSpecimen' 
         where lower(\"basisOfRecord\") like '%preserved%' and lower(\"basisOfRecord\") not like 'preservedspecimen';")) # update basisOfRecord for misspelling
-  dbSendStatement(con,paste("update ", dataset[i], " set send_to_ipt = FALSE 
+  dbExecute(con,paste("update ", dataset[i], " set send_to_ipt = FALSE 
         where position(lower(\"basisOfRecord\") in lower('PreservedSpecimen|FossilSpecimen|LivingSpecimen|HumanObservation|MachineObservation|MaterialSample|Occurrence'))=0;")) # exclude record for export to ipt where basisOfRecord is not normalized according to the DcW vocabulary.
-  dbSendStatement(con,paste("with double_rec_temp as (
+  dbExecute(con,paste("with double_rec_temp as (
         select \"occurrenceID\", count(\"collectionCode\") as n from ", dataset[i], " group by \"occurrenceID\")
         update ", dataset[i], " set send_to_ipt = FALSE
         from (select * from double_rec_temp where n > 1) dbl
 	      where dbl.n > 1 and dbl.\"occurrenceID\"=", dataset[i], ".\"occurrenceID\";")) # exclude record to export to ipt when occurrenceID occures more than one
-  dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
-  dbSendStatement(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
+  dbExecute(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
+  dbExecute(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
   dbSendStatement(con,paste("select public.create_", dataset[i], "_view()",sep="")) # create the view that serves the ipt
 }
 
