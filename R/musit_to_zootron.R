@@ -72,7 +72,7 @@ for (i in 1:length(dataset)){
 	      where dbl.n > 1 and dbl.\"occurrenceID\"=", dataset[i], ".\"occurrenceID\";")) # exclude record to export to ipt when occurrenceID occures more than one
   dbExecute(con,paste("GRANT SELECT ON", dataset[i], "TO ipt;")) # make sure db user ipt has read access
   dbExecute(con,paste("GRANT SELECT ON", dataset[i], "TO natron_guest;")) # make sure db user natron_guest has read access
-  dbSendStatement(con,paste("select public.create_", dataset[i], "_view()",sep="")) # create the view that serves the ipt
+  dbExecute(con,paste("select public.create_", dataset[i], "_view()",sep="")) # create the view that serves the ipt
 }
 
 dbDisconnect(con) # disconnect from DB
